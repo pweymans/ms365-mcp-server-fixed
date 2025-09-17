@@ -133,7 +133,7 @@ export function registerGraphTools(
     server.tool(
       tool.alias,
       tool.description || `Execute ${tool.method.toUpperCase()} request to ${tool.path}`,
-      paramSchema,
+      paramSchema as any,
       {
         title: tool.alias,
         readOnlyHint: tool.method.toUpperCase() === 'GET',
@@ -177,7 +177,7 @@ export function registerGraphTools(
             const fixedParamName = odataParams.includes(paramName.toLowerCase())
               ? `$${paramName.toLowerCase()}`
               : paramName;
-            const paramDef = parameterDefinitions.find((p) => p.name === paramName);
+            const paramDef = parameterDefinitions.find((p: any) => p.name === paramName);
 
             if (paramDef) {
               switch (paramDef.type) {
@@ -228,7 +228,7 @@ export function registerGraphTools(
           }
 
           const isProbablyMediaContent =
-            tool.errors?.some((error) => error.description === 'Retrieved media content') ||
+            tool.errors?.some((error: any) => error.description === 'Retrieved media content') ||
             path.endsWith('/content');
 
           if (isProbablyMediaContent) {

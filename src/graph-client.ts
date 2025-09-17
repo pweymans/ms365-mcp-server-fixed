@@ -10,6 +10,7 @@ interface GraphRequestOptions {
   includeHeaders?: boolean;
   accessToken?: string;
   refreshToken?: string;
+  queryParams?: Record<string, string>;
 
   [key: string]: unknown;
 }
@@ -142,7 +143,13 @@ class GraphClient {
     accessToken: string,
     options: GraphRequestOptions
   ): Promise<Response> {
-    const url = `https://graph.microsoft.com/v1.0${endpoint}`;
+    let url = `https://graph.microsoft.com/v1.0${endpoint}`;
+    
+    // Add query parameters if provided
+    if (options.queryParams) {
+      const urlParams = new URLSearchParams(options.queryParams);
+      url += (endpoint.includes('?') ? '&' : '?') + urlParams.toString();
+    }
 
     const headers: Record<string, string> = {
       Authorization: `Bearer ${accessToken}`,

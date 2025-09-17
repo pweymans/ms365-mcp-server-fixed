@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "name": "ms365-mcp-server",
+  "builds": [
+    {
+      "src": "dist/index.js",
+      "use": "@vercel/node",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "dist/index.js"
+    }
+  ],
+  "functions": {
+    "dist/index.js": {
+      "maxDuration": 30
+    }
+  }
+}

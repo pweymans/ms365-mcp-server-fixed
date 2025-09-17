@@ -1,0 +1,19 @@
+# Azure AD Redirect URIs voor MS365 MCP Server
+# Update deze in Azure Portal → App registrations → Authentication
+
+# Lokale development
+http://localhost:3000/callback
+
+# Ngrok tunnel (update wanneer ngrok URL wijzigt)
+https://a0860952868e.ngrok-free.app/auth/callback
+
+# ChatGPT-5 OAuth callbacks
+https://chatgpt.com/oauth/callback
+https://chat.openai.com/oauth/callback
+
+# Extra voor MCP Inspector (optioneel)
+http://localhost:6274/oauth/callback
+
+# BELANGRIJK: 
+# - Verwijder oude ngrok URLs om verwarring te voorkomen
+# - Update deze lijst telkens wanneer je ngrok herstart (nieuwe URL)

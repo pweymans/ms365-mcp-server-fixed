@@ -1,0 +1,30 @@
+{
+  "name": "MS365 MCP Server",
+  "url": "https://a0860952868e.ngrok-free.app/mcp",
+  "authentication": {
+    "type": "oauth2",
+    "oauth_config": {
+      "authorization_url": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+      "token_url": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+      "client_id": "a797c125-f983-4321-9d6e-e7bfef3e7fdb",
+      "scopes": [
+        "https://graph.microsoft.com/User.Read",
+        "https://graph.microsoft.com/Mail.Read",
+        "https://graph.microsoft.com/Mail.Send",
+        "https://graph.microsoft.com/Calendars.ReadWrite",
+        "https://graph.microsoft.com/Files.ReadWrite.All"
+      ]
+    }
+  },
+  "headers": {
+    "ngrok-skip-browser-warning": "true",
+    "Content-Type": "application/json"
+  },
+  "description": "Microsoft 365 integration voor email, calendar, files, en meer"
+}
+
+// NIEUWE ENDPOINTS BESCHIKBAAR:
+// Base URL: https://a0860952868e.ngrok-free.app
+// MCP Endpoint: https://a0860952868e.ngrok-free.app/mcp
+// OAuth Discovery: https://a0860952868e.ngrok-free.app/.well-known/oauth-authorization-server
+// OpenID Configuration: https://a0860952868e.ngrok-free.app/mcp/.well-known/openid-configuration

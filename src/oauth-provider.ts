@@ -44,9 +44,15 @@ export class MicrosoftOAuthProvider extends ProxyOAuthServerProvider {
         }
       },
       getClient: async (client_id: string) => {
+        const baseUrl = process.env.PUBLIC_URL || 'http://localhost:3000';
         return {
           client_id,
-          redirect_uris: ['http://localhost:3000/callback'],
+          redirect_uris: [
+            'http://localhost:3000/callback',
+            `${baseUrl}/auth/callback`,
+            'https://chatgpt.com/oauth/callback',
+            'https://chat.openai.com/oauth/callback'
+          ],
         };
       },
     });

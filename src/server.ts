@@ -142,6 +142,60 @@ class MicrosoftGraphServer {
         });
       });
 
+      // Additional discovery endpoints for ChatGPT-5 compatibility
+      app.get('/mcp/.well-known/openid-configuration', async (req, res) => {
+        const url = new URL(`${req.protocol}://${req.get('host')}`);
+        res.json({
+          issuer: `${url.origin}/mcp`,
+          authorization_endpoint: `${url.origin}/auth/authorize`,
+          token_endpoint: `${url.origin}/auth/token`,
+          mcp_endpoint: `${url.origin}/mcp`,
+          scopes_supported: [
+            'https://graph.microsoft.com/User.Read',
+            'https://graph.microsoft.com/Mail.Read',
+            'https://graph.microsoft.com/Mail.Send',
+            'https://graph.microsoft.com/Calendars.ReadWrite',
+            'https://graph.microsoft.com/Files.ReadWrite.All'
+          ]
+        });
+      });
+
+      app.get('/.well-known/openid-configuration/mcp', async (req, res) => {
+        const url = new URL(`${req.protocol}://${req.get('host')}`);
+        res.json({
+          issuer: url.origin,
+          mcp_endpoint: `${url.origin}/mcp`,
+          authorization_endpoint: `${url.origin}/auth/authorize`,
+          token_endpoint: `${url.origin}/auth/token`,
+          scopes_supported: [
+            'https://graph.microsoft.com/User.Read',
+            'https://graph.microsoft.com/Mail.Read',
+            'https://graph.microsoft.com/Mail.Send',
+            'https://graph.microsoft.com/Calendars.ReadWrite',
+            'https://graph.microsoft.com/Files.ReadWrite.All'
+          ]
+        });
+      });
+
+      app.get('/.well-known/oauth-authorization-server/mcp', async (req, res) => {
+        const url = new URL(`${req.protocol}://${req.get('host')}`);
+        res.json({
+          issuer: url.origin,
+          authorization_endpoint: `${url.origin}/auth/authorize`,
+          token_endpoint: `${url.origin}/auth/token`,
+          mcp_endpoint: `${url.origin}/mcp`,
+          response_types_supported: ['code'],
+          grant_types_supported: ['authorization_code', 'refresh_token'],
+          scopes_supported: [
+            'https://graph.microsoft.com/User.Read',
+            'https://graph.microsoft.com/Mail.Read',
+            'https://graph.microsoft.com/Mail.Send',
+            'https://graph.microsoft.com/Calendars.ReadWrite',
+            'https://graph.microsoft.com/Files.ReadWrite.All'
+          ]
+        });
+      });
+
       // Dynamic Client Registration endpoint
       app.post('/register', async (req, res) => {
         const body = req.body;
@@ -317,6 +371,31 @@ class MicrosoftGraphServer {
           issuerUrl: new URL(`http://localhost:${port}`),
         })
       );
+
+      // MCP discovery endpoint (unauthenticated for initial discovery)
+      app.get('/mcp/discovery', async (req: Request, res: Response) => {
+        const url = new URL(`${req.protocol}://${req.get('host')}`);
+        res.json({
+          name: 'Microsoft365MCP',
+          version: this.server?.getVersion?.() || '1.0.0',
+          description: 'Microsoft 365 MCP Server for accessing Graph API',
+          mcp_endpoint: `${url.origin}/mcp`,
+          authentication: {
+            type: 'oauth2',
+            oauth_endpoints: {
+              authorization_url: `https://login.microsoftonline.com/common/oauth2/v2.0/authorize`,
+              token_url: `https://login.microsoftonline.com/common/oauth2/v2.0/token`
+            }
+          },
+          capabilities: ['tools', 'resources'],
+          tools_available: ['get-current-user', 'list-mail-messages', 'send-mail', 'list-calendars', 'list-calendar-events']
+        });
+      });
+
+      // OPTIONS handler for CORS preflight requests
+      app.options('/mcp', (req: Request, res: Response) => {
+        res.status(200).end();
+      });
 
       // Microsoft Graph MCP endpoints with bearer token auth
       // Handle both GET and POST methods as required by MCP Streamable HTTP specification
