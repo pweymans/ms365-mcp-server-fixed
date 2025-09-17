@@ -36,12 +36,58 @@ class MicrosoftGraphServer {
   private options: CommandOptions;
   private graphClient: GraphClient;
   private server: McpServer | null;
+  private expressApp: any = null;
 
   constructor(authManager: AuthManager, options: CommandOptions = {}) {
     this.authManager = authManager;
     this.options = options;
     this.graphClient = new GraphClient(authManager);
     this.server = null;
+  }
+
+  getExpressApp() {
+    return this.expressApp;
+  }
+
+  async initializeForVercel(version: string): Promise<any> {
+    await this.initialize(version);
+    if (this.options.http) {
+      // For Vercel, return the Express app without starting the server
+      const port = typeof this.options.http === 'string' ? parseInt(this.options.http) : 3000;
+      await this.setupHttpServer(port);
+      return this.expressApp;
+    }
+    throw new Error('HTTP mode required for Vercel');
+  }
+
+  private async setupHttpServer(port: number): Promise<void> {
+    // Extract the HTTP setup logic without the listen() call
+    const app = express();
+    this.expressApp = app;
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+
+    // Add CORS headers for all routes
+    app.use((req, res, next) => {
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      res.header(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept, Authorization, mcp-protocol-version'
+      );
+
+      // Handle preflight requests
+      if (req.method === 'OPTIONS') {
+        res.sendStatus(200);
+        return;
+      }
+
+      next();
+    });
+
+    const oauthProvider = new MicrosoftOAuthProvider(this.authManager);
+
+    // Add all the endpoints... (will continue in next edit)
   }
 
   async initialize(version: string): Promise<void> {
@@ -90,6 +136,7 @@ class MicrosoftGraphServer {
       const port = typeof this.options.http === 'string' ? parseInt(this.options.http) : 3000;
 
       const app = express();
+      this.expressApp = app; // Store for Vercel access
       app.use(express.json());
       app.use(express.urlencoded({ extended: true }));
 

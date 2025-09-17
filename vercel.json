@@ -2,14 +2,14 @@
   "version": 2,
   "name": "ms365-mcp-server",
   "functions": {
-    "dist/index.js": {
+    "api/index.js": {
       "maxDuration": 30
     }
   },
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/dist/index.js"
+      "destination": "/api"
     }
   ]
 }
